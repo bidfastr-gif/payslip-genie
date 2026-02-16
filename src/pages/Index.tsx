@@ -176,7 +176,7 @@ const Index = () => {
   const updateEmployee = useMutation<EmployeeRow, Error, EmployeeUpdate>({
     mutationFn: async (employeeData) => {
       const sanitizedData = sanitizeEmployeeUpdateData(employeeData);
-      let payload: Record<string, unknown> = { ...sanitizedData };
+      let payload: EmployeeUpdate = { ...sanitizedData };
       for (let i = 0; i < 5; i++) {
         const res = await supabase
           .from("employees")
@@ -218,7 +218,7 @@ const Index = () => {
   const addEmployee = useMutation<EmployeeRow, Error, EmployeeInsert>({
     mutationFn: async (employeeData) => {
       const sanitizedData = sanitizeEmployeeInsertData(employeeData);
-      let payload: Record<string, unknown> = { ...sanitizedData };
+      let payload: EmployeeInsert = { ...sanitizedData };
       for (let i = 0; i < 5; i++) {
         const res = await supabase
           .from("employees")
