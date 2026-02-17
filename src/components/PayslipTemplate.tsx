@@ -163,7 +163,7 @@ const PayslipTemplate = forwardRef<HTMLDivElement, PayslipTemplateProps>(
               <div className="flex">
                 <span className="w-32 text-muted-foreground">Date of Joining</span>
                 <span className="mx-2">:</span>
-                <span>{formatDMY(employee.uan_number)}</span>
+                <span>{employee.uan_number || '-'}</span>
               </div>
               <div className="flex">
                 <span className="w-32 text-muted-foreground">Date of Birth</span>

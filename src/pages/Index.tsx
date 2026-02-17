@@ -176,20 +176,19 @@ const Index = () => {
   const updateEmployee = useMutation<EmployeeRow, Error, EmployeeUpdate>({
     mutationFn: async (employeeData) => {
       const sanitizedData = sanitizeEmployeeUpdateData(employeeData);
-      let payload: EmployeeUpdate = { ...sanitizedData };
+      const payload: Record<string, unknown> = { ...sanitizedData };
       for (let i = 0; i < 5; i++) {
         const res = await supabase
           .from("employees")
-          .update(payload)
+          .update(payload as EmployeeUpdate)
           .eq("id", editingEmployee!.id)
           .select()
           .single();
         if (!res.error) return res.data as EmployeeRow;
         const msg = String(res.error.message || "");
         const col = getMissingColumnFromError(msg);
-        if (col && col in payload) {
-          const { [col]: _omit, ...rest } = payload;
-          payload = rest;
+        if (col && Object.prototype.hasOwnProperty.call(payload, col)) {
+          delete (payload as Record<string, unknown>)[col];
           continue;
         }
         throw res.error;
@@ -218,19 +217,18 @@ const Index = () => {
   const addEmployee = useMutation<EmployeeRow, Error, EmployeeInsert>({
     mutationFn: async (employeeData) => {
       const sanitizedData = sanitizeEmployeeInsertData(employeeData);
-      let payload: EmployeeInsert = { ...sanitizedData };
+      const payload: Record<string, unknown> = { ...sanitizedData };
       for (let i = 0; i < 5; i++) {
         const res = await supabase
           .from("employees")
-          .insert([payload])
+          .insert([payload as EmployeeInsert])
           .select()
           .single();
         if (!res.error) return res.data as EmployeeRow;
         const msg = String(res.error.message || "");
         const col = getMissingColumnFromError(msg);
-        if (col && col in payload) {
-          const { [col]: _omit, ...rest } = payload;
-          payload = rest;
+        if (col && Object.prototype.hasOwnProperty.call(payload, col)) {
+          delete (payload as Record<string, unknown>)[col];
           continue;
         }
         throw res.error;
