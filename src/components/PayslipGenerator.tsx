@@ -50,7 +50,8 @@ const PayslipGenerator = ({ employees }: PayslipGeneratorProps) => {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [month, setMonth] = useState(months[new Date().getMonth()]);
   const [year, setYear] = useState(currentYear.toString());
-  const [workedDays, setWorkedDays] = useState(0);
+  const [workedFullDays, setWorkedFullDays] = useState(0);
+  const [workedHalfDays, setWorkedHalfDays] = useState(0);
   const [weeklyOff, setWeeklyOff] = useState(0);
   const [holiday, setHoliday] = useState(0);
   const [paidLeaves, setPaidLeaves] = useState(0);
@@ -128,13 +129,14 @@ const PayslipGenerator = ({ employees }: PayslipGeneratorProps) => {
   useEffect(() => {
     if (!selectedEmployee) return;
     const totalDays = getDaysInMonth(year, month);
-    const accounted = Math.min(workedDays + weeklyOff + holiday + paidLeaves, totalDays);
+    const workedPayableDays = workedFullDays + workedHalfDays * 0.5;
+    const accounted = Math.min(workedPayableDays + weeklyOff + holiday + paidLeaves, totalDays);
     const missing = Math.max(totalDays - accounted, 0);
     const monthlyGross = selectedEmployee.basic_salary + selectedEmployee.hra + selectedEmployee.other_allowances;
     const perDay = totalDays > 0 ? monthlyGross / totalDays : 0;
     const deduction = Number((missing * perDay).toFixed(2));
     setOtherDeductionsInput(deduction);
-  }, [selectedEmployee, workedDays, weeklyOff, holiday, paidLeaves, month, year]);
+  }, [selectedEmployee, workedFullDays, workedHalfDays, weeklyOff, holiday, paidLeaves, month, year]);
 
   return (
     <div className="space-y-6">
@@ -190,7 +192,7 @@ const PayslipGenerator = ({ employees }: PayslipGeneratorProps) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
             <div className="space-y-2">
               <Label>Total Working Days</Label>
               <Input
@@ -200,8 +202,21 @@ const PayslipGenerator = ({ employees }: PayslipGeneratorProps) => {
               />
             </div>
             <div className="space-y-2">
-              <Label>Worked Days</Label>
-              <Select value={workedDays.toString()} onValueChange={(v) => setWorkedDays(Number(v))}>
+              <Label>Worked Full Day</Label>
+              <Select value={workedFullDays.toString()} onValueChange={(v) => setWorkedFullDays(Number(v))}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="max-h-[200px]">
+                  {days.map((d) => (
+                    <SelectItem key={d} value={d}>{d}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Worked Half Day</Label>
+              <Select value={workedHalfDays.toString()} onValueChange={(v) => setWorkedHalfDays(Number(v))}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -321,7 +336,8 @@ const PayslipGenerator = ({ employees }: PayslipGeneratorProps) => {
           employee={selectedEmployee}
           month={month}
           year={year}
-          workedDays={workedDays}
+          workedFullDays={workedFullDays}
+          workedHalfDays={workedHalfDays}
           weeklyOff={weeklyOff}
           holiday={holiday}
           paidLeaves={paidLeaves}

@@ -41,7 +41,8 @@ interface PayslipTemplateProps {
   employee: Employee;
   month: string;
   year: string;
-  workedDays: number;
+  workedFullDays: number;
+  workedHalfDays: number;
   weeklyOff: number;
   holiday: number;
   paidLeaves: number;
@@ -51,7 +52,7 @@ interface PayslipTemplateProps {
 }
 
 const PayslipTemplate = forwardRef<HTMLDivElement, PayslipTemplateProps>(
-  ({ employee, month, year, workedDays, weeklyOff, holiday, paidLeaves, salaryDetails, onSalaryDetailsChange, isEditing }, ref) => {
+  ({ employee, month, year, workedFullDays, workedHalfDays, weeklyOff, holiday, paidLeaves, salaryDetails, onSalaryDetailsChange, isEditing }, ref) => {
     // Use salaryDetails if provided, otherwise fallback to employee data
     const currentSalary = salaryDetails || {
       basic_salary: employee.basic_salary,
@@ -96,6 +97,11 @@ const PayslipTemplate = forwardRef<HTMLDivElement, PayslipTemplateProps>(
       Number(currentSalary.other_deductions || 0);
     
     const netPayable = totalEarnings - totalDeductions;
+
+    const workedPayableDays = workedFullDays + workedHalfDays * 0.5;
+    const workedPayableDaysLabel = Number.isInteger(workedPayableDays)
+      ? workedPayableDays.toString()
+      : workedPayableDays.toFixed(1);
 
     const inputClass = "h-6 p-0 text-right border-0 bg-transparent focus-visible:ring-0 w-full";
 
@@ -318,9 +324,19 @@ const PayslipTemplate = forwardRef<HTMLDivElement, PayslipTemplateProps>(
             <div className="grid grid-cols-2 gap-8 text-sm mt-2">
               <div className="space-y-1">
                 <div className="flex">
-                  <span className="w-32 text-muted-foreground">Worked Day</span>
+                  <span className="w-32 text-muted-foreground">Worked Full Day</span>
                   <span className="mx-2">:</span>
-                  <span className="font-medium">{workedDays}</span>
+                  <span className="font-medium">{workedFullDays}</span>
+                </div>
+                <div className="flex">
+                  <span className="w-32 text-muted-foreground">Worked Half Day</span>
+                  <span className="mx-2">:</span>
+                  <span className="font-medium">{workedHalfDays}</span>
+                </div>
+                <div className="flex">
+                  <span className="w-32 text-muted-foreground">Worked Days</span>
+                  <span className="mx-2">:</span>
+                  <span className="font-medium">{workedPayableDaysLabel}</span>
                 </div>
                 <div className="flex">
                   <span className="w-32 text-muted-foreground">Holiday</span>
