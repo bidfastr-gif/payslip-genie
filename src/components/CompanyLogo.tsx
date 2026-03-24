@@ -9,6 +9,7 @@ const CompanyLogo = ({ company }: CompanyLogoProps) => {
     const map: Record<string, string[]> = {
       GAP: ["/gap-logo.png", "/gap-logo.jpg", "/gap-logo.jpeg", "/gap-logo.svg"],
       Srivaru: ["/srivaru-logo.png", "/srivaru-logo.jpg", "/srivaru-logo.jpeg", "/srivaru-logo.svg"],
+      Hayati: ["/hayati-logo.svg", "/hayati-logo.png", "/hayati-logo.jpg", "/hayati-logo.jpeg"],
     };
     return company ? map[company] || [] : [];
   }, [company]);
@@ -25,7 +26,7 @@ const CompanyLogo = ({ company }: CompanyLogoProps) => {
       onError={() => setIndex((i) => i + 1)}
       style={{
         display: "block",
-        width: company === "GAP" ? "220px" : company === "Srivaru" ? "220px" : undefined,
+        width: company === "GAP" || company === "Srivaru" || company === "Hayati" ? "220px" : undefined,
         height: "auto",
         mixBlendMode: "multiply",
         backgroundColor: "transparent",

@@ -192,6 +192,7 @@ const EmployeeForm = ({ onSubmit, isLoading, initialData }: EmployeeFormProps) =
                   <SelectContent>
                     <SelectItem value="GAP">GAP</SelectItem>
                     <SelectItem value="Srivaru">Srivaru</SelectItem>
+                    <SelectItem value="Hayati">Hayati</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
